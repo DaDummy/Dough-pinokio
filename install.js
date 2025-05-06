@@ -4,30 +4,23 @@ const path = require('path');
 function getInstallCommand(kernel) {
   const { platform, gpu } = kernel;
 
-  function combineLists(list1, list2) {
-    return [...list1, ...list2];
-  }
-
-  project_requirements = [
-    `pip install -r ${path.resolve(__dirname, project_dir, 'requirements.txt')}`,
-    `pip install -r ${path.resolve(__dirname, project_dir, 'comfy_runner', 'requirements.txt')}`,
-    `pip install -r ${path.resolve(__dirname, project_dir, 'ComfyUI', 'requirements.txt')}`,
-  ];
-
   // only handling linux and win32 for now
   if (platform == "linux") {
-    cmd_list = []; // pinokio by default uses py3.10
-    return combineLists(cmd_list, project_requirements);
+    return [
+      `pip install -r ${path.resolve(__dirname, project_dir, 'requirements.txt')}`,
+      `pip install -r ${path.resolve(__dirname, project_dir, 'comfy_runner', 'requirements.txt')}`,
+      `pip install -r ${path.resolve(__dirname, project_dir, 'ComfyUI', 'requirements.txt')}`,
+	];
   }
 
   if (platform == "win32") {
-    cmd_list = [
-      "python.exe -m pip install --upgrade pip",
+    return [
       "pip install websocket",
-      "pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118",
+      "pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu128",
+      `pip install -r ${path.resolve(__dirname, project_dir, 'ComfyUI', 'requirements.txt')}`,
+      `pip install -r ${path.resolve(__dirname, project_dir, 'requirements.txt')}`,
+      `pip install -r ${path.resolve(__dirname, project_dir, 'comfy_runner', 'requirements.txt')}`,
     ];
-
-    return combineLists(cmd_list, project_requirements);
   }
 
   // only installing the base app for the mac
